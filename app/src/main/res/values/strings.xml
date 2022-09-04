@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Злопамятка.02</string>
+
+    <string name="action_settings">Настройки</string>
+    <string name="action_email">На почту</string>
+    <string name="action_about">О программе</string>
+
+</resources>
