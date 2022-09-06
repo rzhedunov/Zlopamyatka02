@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,16 +14,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-
 import java.util.ArrayList;
-
+//import android.util.Log;
 import ru.zhedunov.zlopamyatka02.db.ZlopamyatkaDbHelper;
 
 public class MainActivity extends AppCompatActivity {
 
+//    private static final String TAG = "MyApp";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,28 +52,25 @@ public class MainActivity extends AppCompatActivity {
         //Подключение к БД - для вывода списка
         SQLiteDatabase db = new ZlopamyatkaDbHelper(getApplicationContext()).getReadableDatabase();
 
-
-        ArrayList<String> events = new ArrayList<>();
+        ArrayList<String> list = new ArrayList<>();
 
         if (db != null) {
             Toast.makeText(getApplicationContext(),
                     "Connected to DB Zlopamyatka ", Toast.LENGTH_LONG).show();
 
-            Cursor cursor = db.query(ZlopamyatkaDbHelper.TABLE_NAME1, null,null,
+            Cursor cursor = db.query(ZlopamyatkaDbHelper.VIEW_NAME, null,null,
                     null,null,null,null);
 
-            ArrayList<String> list = new ArrayList<String>();
-            if ((cursor != null) && (cursor.getCount()>0)) {
-                list = new ArrayList<String>();
+            if ((cursor != null) && (cursor.getCount()>0)) { //Чтение из таблицы
                 cursor.moveToFirst();
-
                 do {
-                    String item = cursor.getString(1);
-                    events.add(item);
-
+                    String item = cursor.getString(0);
+                    String item2 = cursor.getString(1);
+                    String item3 = cursor.getString(2);
+                    String item4 = cursor.getString(3);
+                    list.add(item+" "+item2+" "+item3+" "+item4);
                 } while (cursor.moveToNext());
             }
-
         }
         else {
             Toast.makeText(getApplicationContext(),
@@ -81,21 +78,12 @@ public class MainActivity extends AppCompatActivity {
         }
         db.close();
 
-
         ListView listView = findViewById(R.id.listView);
+//        final String[] list = new String[] {"Театр", "Пиво", "Гости", "Грипп"};
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
 
-//        final String[] catNames = new String[] {
-//                "Театр", "Пиво", "Гости", "Грипп", "Комм.платежи",
-//                "Выкл.света", "Выкл.хол.воды", "Выкл гор.воды", "Занял в долг", "Дождь",
-//                "Истерика", "ГИБДД штраф", "Благотворительность", "Театр", "Пиво", "Гости", "Грипп", "Комм.платежи",
-//                "Выкл.света", "Выкл.хол.воды", "Выкл гор.воды", "Занял в долг", "Дождь",
-//                "Истерика", "ГИБДД штраф", "Благотворительность"
-//        };
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, catNames);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, events);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, list);
         listView.setAdapter(adapter);
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View itemClicked, int position,
@@ -104,9 +92,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
             }
         });
-
     }
-
 
     //Формирование меню приложения
     @Override
@@ -129,6 +115,4 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 }
